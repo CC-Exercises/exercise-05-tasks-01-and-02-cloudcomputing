@@ -1,5 +1,8 @@
 package de.ustutt.iaas.cc.core;
 
+import de.ustutt.iaas.cc.core.schedulingStrategy.RoundRobin;
+import de.ustutt.iaas.cc.core.schedulingStrategy.SchedulingStrategy;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;

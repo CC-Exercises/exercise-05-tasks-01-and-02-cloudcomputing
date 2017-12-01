@@ -1,4 +1,4 @@
-package de.ustutt.iaas.cc.core;
+package de.ustutt.iaas.cc.core.schedulingStrategy;
 
 import javax.ws.rs.client.WebTarget;
 import java.util.List;
