@@ -1,31 +1,34 @@
 package de.ustutt.iaas.cc.core;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.client.Client;
-
-/**
- * A text processor that sends the text to one of a set of remote REST API for
- * processing (and balances the load between them round-robin).
- * 
- * @author hauptfn
- *
- */
 public class RemoteTextProcessorMulti implements ITextProcessor {
 
+	private final SchedulingStrategy schedulingStrategy;
+
 	public RemoteTextProcessorMulti(List<String> textProcessorResources, Client client) {
-		super();
-		// TODO ...
+	    super();
+        List<WebTarget> textProcessors = generateWebTargetsFromSourceList(textProcessorResources, client);
+        this.schedulingStrategy = new RoundRobin(textProcessors);
 	}
 
-	@Override
+    private List<WebTarget> generateWebTargetsFromSourceList(List<String> textProcessorResources, Client client) {
+        List<WebTarget> result = new ArrayList<>();
+        for (String s : textProcessorResources) {
+            result.add(client.target(s));
+        }
+        return result;
+    }
+
+    @Override
 	public String process(String text) {
-		// text processing placeholder, to be replaced by your solution :-)
-		String processedText = "[processed by incomplete RemoteTextProcessorMulti] - " + text;
+		WebTarget textProcessor = schedulingStrategy.next();
 
-		// TODO send request to "next" text processor endpoint (following some load balancing strategy)
-
-		return processedText;
+		return textProcessor.request(MediaType.TEXT_PLAIN).post(Entity.entity(text, MediaType.TEXT_PLAIN), String.class);
 	}
-
 }
